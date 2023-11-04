@@ -1,0 +1,74 @@
+#to-platform {
+  font-family: sans-serif;
+  border: 1px solid #ff6c22;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+#to-platform ul {
+  list-style-type: none;
+  padding: 0;
+  line-height: 1.5rem;
+}
+
+#to-platform li span {
+    font-size: 16px;
+    font-weight: 500;
+  color: #ff6c22;
+}
+
+#to-platform #price {
+  font-weight: 800;
+  font-size: 2rem;
+}
+
+#to-platform #to-actions-container {
+    display: flex;
+    margin-top: 10px;
+}
+
+#to-platform button {
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: none;
+  cursor: pointer;
+  padding: 10px 15px;
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+
+#to-platform #purchase-btn {
+    background-color: #ff6c22;
+    margin-right: 10px;
+}
+
+#to-platform #cart-btn {
+    border: 2px solid #ff6c22;
+    color: #ff6c22;
+    margin-right: 10px;
+    transition: .3s all;
+}
+
+#to-platform #cart-btn:hover {
+    margin-right: 10px;
+    background-color: #ff6c22;
+    color: #fff;
+}
+
+#to-platform #cart-btn:hover svg{
+    stroke: #fff;
+}
+
+#to-platform button svg {
+    stroke: #ff6c22;
+  width: 25px;
+  height: auto;
+  margin-right: 5px;
+}
