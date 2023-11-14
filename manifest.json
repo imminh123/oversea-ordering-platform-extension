@@ -13,7 +13,8 @@
     {
         "css": [ "style.css" ],
         "matches": [
-            "https://item.taobao.com/item.htm*"
+            "https://item.taobao.com/item.htm*",
+            "https://detail.tmall.com/item.htm*"
         ],
         "js": ["scripts/content.js"]
     }

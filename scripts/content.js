@@ -1,28 +1,5 @@
 const varientContainer = document.getElementsByClassName("tb-skin");
-
-const params = new URLSearchParams(window.location.search);
-const productId = params.get('id');
-
-const baseUrl = "https://65465281fe036a2fa955844c.mockapi.io";
-
-function addToCart() {
-  fetch(`${baseUrl}/taobao`, {
-    method: "POST", // or 'PUT'
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      id: productId,
-    }),
-  })
-    .then((response) => response.json()) // or .text() for text
-    .then((data) => console.log(data))
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-
-function purchase() {}
+const varientTMallContainer = document.getElementsByClassName("tm-clear");
 
 // `document.querySelector` may return null if the selector doesn't match anything.
 if (varientContainer) {
@@ -32,9 +9,9 @@ if (varientContainer) {
   customActionsContainer.id = "to-platform";
   customActionsContainer.innerHTML = `
     <ul>
-      <li>Giá bán: <span id="price">200đ</span></li>
-      <li>Tỷ giá 1 ¥: <span>3.480đ</span></li>
-      <li>Còn <span>200</span> sản phẩm</li>
+      <li>Giá bán: <span id="aalto-daily-gia-ban">200đ</span></li>
+      <li>Tỷ giá 1 ¥: <span id="aalto-daily-ti-gia">3.480đ</span></li>
+      <li>Còn <span id="aalto-daily-con-lai">200</span> sản phẩm</li>
     </ul>
 
     <div id="to-actions-container">
@@ -72,6 +49,49 @@ if (varientContainer) {
     </div>
         `;
 
+  fetch('http://localhost:3113/api/oversea-ordering/variables?name=exchangeRate&page=1&perPage=1')
+    .then(response => response.json())
+    .then(data => {
+      const exRate = data[0].value;
+      const tiGiaEl = document.getElementById("aalto-daily-ti-gia")
+      tiGiaEl.innerHTML = exRate
+
+      const giaCu = document.getElementById("J_PromoPriceNum").innerHTML
+      const giaMoi = giaCu.split('-').map(e => (e * exRate).toFixed(3) + 'đ ').join('-')
+      document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi
+
+      const sanpham = document.querySelectorAll(".tb-amount dd em")[1].innerHTML;
+      const sanphamconlai = parseInt(sanpham.match(/\d+/)[0])
+      document.getElementById("aalto-daily-con-lai").innerHTML = sanphamconlai
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
+
+  const baseUrl = "https://65465281fe036a2fa955844c.mockapi.io";
+
+  function addToCart() {
+    fetch(`${baseUrl}/taobao`, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: productId,
+      }),
+    })
+      .then((response) => response.json()) // or .text() for text
+      .then((data) => console.log(data))
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  function purchase() { }
+
   // actions container
   const [purchaseButton, addToCartButton] =
     customActionsContainer.getElementsByTagName("button");
@@ -83,3 +103,4 @@ if (varientContainer) {
     actualActionsContainer[0]
   );
 }
+
