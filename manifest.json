@@ -3,6 +3,7 @@
   "name": "Taobao Product Detail Fetcher",
   "version": "1.0",
   "description": "Fetch product details from Taobao",
+  "key": "nlnhigpknkkpcdmeiaakmifeaicfphaf",
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
@@ -11,12 +12,26 @@
   },
   "content_scripts": [
     {
-        "css": [ "style.css" ],
-        "matches": [
-            "https://item.taobao.com/item.htm*",
-            "https://detail.tmall.com/item.htm*"
-        ],
-        "js": ["scripts/content.js"]
+      "css": [
+        "style.css"
+      ],
+      "matches": [
+        "https://item.taobao.com/item.htm*",
+        "https://detail.tmall.com/item.htm*"
+      ],
+      "js": [
+        "scripts/content.js"
+      ]
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "externally_connectable": {
+    "matches": [
+      "http://localhost:3000/*",
+      "https://api.mby.vn/api/oversea-ordering/*"
+    ]
+  }
 }
