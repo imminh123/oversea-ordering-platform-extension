@@ -1,3 +1,9 @@
+var port = chrome.runtime.connect({ name: "knockknock" });
+port.postMessage({ joke: "Knock knock" });
+port.onMessage.addListener(function (msg) {
+  console.log("🚀🚀🚀 ~ file: content.js:4 ~ port.onMessage.addListener ~ msg:", msg);
+});
+
 const varientContainer = document.getElementsByClassName("tb-skin");
 const varientTMallContainer = document.getElementsByClassName("tm-clear");
 var tigia;
@@ -81,7 +87,7 @@ document.addEventListener("readystatechange", (event) => {
       })
 
       const quantity = document.getElementById("J_IptAmount").value
-      console.log("🚀🚀🚀 ~ addToCart ~ ", {quantity, productId, properties});
+      console.log("🚀🚀🚀 ~ addToCart ~ ", { quantity, productId, properties });
 
       // fetch(`${baseUrl}/taobao`, {
       //   method: "POST", // or 'PUT'
@@ -116,12 +122,15 @@ document.addEventListener("readystatechange", (event) => {
 });
 
 function updateGia(rate) {
-  const giaCu = document.getElementById("J_PromoPriceNum").innerHTML
-  const giaMoi = giaCu.split('-').map(e => (e * rate).toFixed(3) + 'đ ').join('-')
-  document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi
-  const sanpham = document.querySelectorAll(".tb-amount dd em")[1].innerHTML;
-  const sanphamconlai = parseInt(sanpham.match(/\d+/)[0])
-  document.getElementById("aalto-daily-con-lai").innerHTML = sanphamconlai
+  setTimeout(() => {
+    const giaCu = document.getElementById("J_PromoPriceNum").innerHTML
+    const giaMoi = giaCu.split('-').map(e => (e * rate).toFixed(3) + 'đ ').join('-')
+    document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi
+    const sanpham = document.querySelectorAll(".tb-amount dd em")[1].innerHTML;
+    const sanphamconlai = parseInt(sanpham.match(/\d+/)[0])
+    document.getElementById("aalto-daily-con-lai").innerHTML = sanphamconlai
+  }, 200)
+
 }
 
 // On click product

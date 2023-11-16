@@ -3,7 +3,6 @@
   "name": "Taobao Product Detail Fetcher",
   "version": "1.0",
   "description": "Fetch product details from Taobao",
-  "key": "nlnhigpknkkpcdmeiaakmifeaicfphaf",
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
@@ -25,8 +24,7 @@
     }
   ],
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "service-worker.js"
   },
   "externally_connectable": {
     "matches": [
