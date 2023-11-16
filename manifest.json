@@ -9,6 +9,12 @@
     "48": "images/icon-64.png",
     "128": "images/icon-128.png"
   },
+  "permissions": [
+    "tabs",
+    "bookmarks",
+    "storage",
+    "contextMenus"
+  ],
   "content_scripts": [
     {
       "css": [
@@ -16,7 +22,8 @@
       ],
       "matches": [
         "https://item.taobao.com/item.htm*",
-        "https://detail.tmall.com/item.htm*"
+        "https://detail.tmall.com/item.htm*",
+        "http://localhost:3000/*"
       ],
       "js": [
         "scripts/content.js"
@@ -24,12 +31,16 @@
     }
   ],
   "background": {
-    "service_worker": "service-worker.js"
+    "service_worker": "service-worker.js",
+    "type": "module"
   },
   "externally_connectable": {
     "matches": [
       "http://localhost:3000/*",
       "https://api.mby.vn/api/oversea-ordering/*"
     ]
-  }
+  },
+  "host_permissions": [
+    "http://localhost:3000/*"
+  ]
 }

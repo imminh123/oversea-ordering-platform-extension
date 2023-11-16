@@ -1,12 +1,13 @@
-var port = chrome.runtime.connect({ name: "knockknock" });
-port.postMessage({ joke: "Knock knock" });
-port.onMessage.addListener(function (msg) {
-  console.log("🚀🚀🚀 ~ file: content.js:4 ~ port.onMessage.addListener ~ msg:", msg);
-});
 
+
+const baseUrl = "https://api.mby.vn/api/oversea-ordering";
 const varientContainer = document.getElementsByClassName("tb-skin");
 const varientTMallContainer = document.getElementsByClassName("tm-clear");
 var tigia;
+var token;
+chrome.storage.local.get("aaltoToken", (result) => {
+  token = result.aaltoToken;
+})
 
 document.addEventListener("readystatechange", (event) => {
   if (varientContainer) {
@@ -57,7 +58,7 @@ document.addEventListener("readystatechange", (event) => {
           `;
 
     function fetchTiGia() {
-      fetch('https://api.mby.vn/api/oversea-ordering/variables?name=exchangeRate&page=1&perPage=1')
+      fetch(`${baseUrl}/variables?name=exchangeRate&page=1&perPage=1`)
         .then(response => response.json())
         .then(data => {
           const exRate = data[0].value;
@@ -77,7 +78,6 @@ document.addEventListener("readystatechange", (event) => {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
 
-    const baseUrl = "https://65465281fe036a2fa955844c.mockapi.io";
 
     function addToCart() {
       const pickProperty = document.querySelectorAll(".tb-skin .tb-selected")
@@ -87,22 +87,24 @@ document.addEventListener("readystatechange", (event) => {
       })
 
       const quantity = document.getElementById("J_IptAmount").value
-      console.log("🚀🚀🚀 ~ addToCart ~ ", { quantity, productId, properties });
 
-      // fetch(`${baseUrl}/taobao`, {
-      //   method: "POST", // or 'PUT'
-      //   headers: {
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify({
-      //     id: productId,
-      //   }),
-      // })
-      //   .then((response) => response.json()) // or .text() for text
-      //   .then((data) => console.log(data))
-      //   .catch((error) => {
-      //     console.error("Error:", error);
-      //   });
+      fetch(`${baseUrl}/cart`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+          "access-token": `${token}`
+        },
+        body: JSON.stringify({
+          id: productId,
+          pvid: properties,
+          volume: quantity
+        }),
+      })
+        .then((response) => response.json()) // or .text() for text
+        .then((data) => console.log(data))
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
 
     function purchase() { }
