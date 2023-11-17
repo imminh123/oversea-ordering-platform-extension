@@ -97,7 +97,7 @@ document.addEventListener("readystatechange", (event) => {
         body: JSON.stringify({
           id: productId,
           pvid: properties,
-          volume: quantity
+          volume: Number(quantity)
         }),
       })
         .then((response) => response.json()) // or .text() for text
