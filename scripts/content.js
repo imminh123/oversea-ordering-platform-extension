@@ -22,17 +22,14 @@ function updateGiaTMallItem(rate) {
     if (!!giaMoi) {
       document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi * rate;
     }
-    const sanpham = document.querySelectorAll(".tb-amount dd em")[1].innerHTML;
-    const sanphamconlai = parseInt(sanpham.match(/\d+/)[0]);
-    document.getElementById("aalto-daily-con-lai").innerHTML = sanphamconlai;
   }, 200);
 }
 
 function updateGiaTaobaoItem(rate) {
   setTimeout(() => {
-    const giaCu = document.getElementById("J_PromoPriceNum").innerHTML;
+    const giaCu = document.getElementById("J_PromoPriceNum");
     if (giacu) {
-      const giaMoi = giaCu
+      const giaMoi = giaCu.innerHTML
         .split("-")
         .map((e) => (e * rate) + "đ ")
         .join("-");
@@ -119,7 +116,9 @@ function addToCartTMallItem() {
     });
 }
 
-function purchase() { }
+function purchase() {
+  window.open('https://app.mby.vn/cart', '_blank').focus();
+}
 
 function main() {
   var elements = document.querySelectorAll('*');
@@ -135,11 +134,10 @@ function main() {
       <ul>
         <li>Giá bán: <span id="aalto-daily-gia-ban">200đ</span></li>
         <li>Tỷ giá 1 ¥: <span id="aalto-daily-ti-gia">3.480đ</span></li>
-        <li>Còn <span id="aalto-daily-con-lai">200</span> sản phẩm</li>
       </ul>
   
       <div id="to-actions-container">
-        <button id="purchase-btn">Mua hàng</button>
+        <button id="purchase-btn">Đến giỏ hàng</button>
         <button id="cart-btn" onclick="addToCart()">
           <svg
             width="800px"
@@ -198,11 +196,10 @@ function main() {
       <ul>
         <li>Giá bán: <span id="aalto-daily-gia-ban">200đ</span></li>
         <li>Tỷ giá 1 ¥: <span id="aalto-daily-ti-gia">3.480đ</span></li>
-        <li>Còn <span id="aalto-daily-con-lai">200</span> sản phẩm</li>
       </ul>
   
       <div id="to-actions-container">
-        <button id="purchase-btn">Mua hàng</button>
+        <button id="purchase-btn">Đến giỏ hàng</button>
         <button id="cart-btn" onclick="addToCart()">
           <svg
             width="800px"
