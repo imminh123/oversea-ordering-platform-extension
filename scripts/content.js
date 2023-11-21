@@ -1,11 +1,10 @@
-const baseUrl = "http://localhost:3113/api/oversea-ordering";
-// const baseUrl = "https://api.mby.vn/api/oversea-ordering";
+const baseUrl = "https://api.mby.vn/api/oversea-ordering";
 const isTaobao = location.hostname === 'item.taobao.com'
 const isTMall = location.hostname === 'detail.tmall.com'
 var tigia;
 var token;
 var varientContainer = document.getElementsByClassName("tb-skin");
-var varientTMallContainer = document.getElementsByClassName("tm-clear");
+
 chrome.storage.local.get("aaltoToken", (result) => {
   token = result.aaltoToken;
 });
@@ -21,7 +20,7 @@ function updateGiaTMallItem(rate) {
 
     const giaMoi = matchingElements[0].innerHTML
     if (!!giaMoi) {
-      document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi;
+      document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi * rate;
     }
     const sanpham = document.querySelectorAll(".tb-amount dd em")[1].innerHTML;
     const sanphamconlai = parseInt(sanpham.match(/\d+/)[0]);
@@ -32,11 +31,13 @@ function updateGiaTMallItem(rate) {
 function updateGiaTaobaoItem(rate) {
   setTimeout(() => {
     const giaCu = document.getElementById("J_PromoPriceNum").innerHTML;
-    const giaMoi = giaCu
-      .split("-")
-      .map((e) => (e * rate).toFixed(3) + "đ ")
-      .join("-");
-    document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi;
+    if (giacu) {
+      const giaMoi = giaCu
+        .split("-")
+        .map((e) => (e * rate) + "đ ")
+        .join("-");
+      document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi;
+    }
   }, 200);
 }
 
@@ -50,7 +51,12 @@ function fetchTiGia() {
         tiGiaEl.innerHTML = exRate;
       }
       tigia = exRate;
-      updateGiaTaobaoItem(exRate);
+      if (isTaobao) {
+        updateGiaTaobaoItem(exRate);
+      }
+      if (isTMall) {
+        updateGiaTMallItem(exRate);
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -87,9 +93,40 @@ function addToCartTaobaoItem() {
     });
 }
 
+function addToCartTMallItem() {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("id");
+  const skuId = params.get("skuId");
+
+  const quantity = document.getElementsByClassName("countValueForPC")[0].value;
+
+  fetch(`${baseUrl}/cart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "access-token": `${token}`,
+    },
+    body: JSON.stringify({
+      id: productId,
+      pvid: [skuId],
+      volume: Number(quantity),
+    }),
+  })
+    .then((response) => response.json()) // or .text() for text
+    .then((data) => console.log(data))
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
 function purchase() { }
 
 function main() {
+  var elements = document.querySelectorAll('*');
+  var regexTMall = /Price--root-.*/;
+  var varientTMallContainer = Array.from(elements).filter(element => {
+    return Array.from(element.classList).some(className => regexTMall.test(className));
+  })[0];
 
   if (!!varientContainer.length && isTaobao) {
     const customActionsContainer = document.createElement("div");
@@ -154,7 +191,7 @@ function main() {
     varientContainer[0].append(customActionsContainer);
   }
 
-  if (!!varientTMallContainer.length && isTMall) {
+  if (varientTMallContainer && isTMall) {
     const customActionsContainer = document.createElement("div");
     customActionsContainer.id = "to-platform";
     customActionsContainer.innerHTML = `
@@ -210,9 +247,9 @@ function main() {
     const [purchaseButton, addToCartButton] =
       customActionsContainer.getElementsByTagName("button");
     purchaseButton.addEventListener("click", purchase);
-    addToCartButton.addEventListener("click", addToCartTaobaoItem);
+    addToCartButton.addEventListener("click", addToCartTMallItem);
 
-    varientTMallContainer[0].append(customActionsContainer);
+    varientTMallContainer.append(customActionsContainer);
   }
 }
 
