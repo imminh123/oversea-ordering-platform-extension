@@ -1,7 +1,7 @@
 const baseUrl = "https://api.mby.vn/api/oversea-ordering";
 const isTaobao = location.hostname === 'item.taobao.com'
 const isTMall = location.hostname === 'detail.tmall.com'
-var tigia;
+var globalRate;
 var token;
 var varientContainer = document.getElementsByClassName("tb-skin");
 
@@ -9,7 +9,22 @@ chrome.storage.local.get("aaltoToken", (result) => {
   token = result.aaltoToken;
 });
 
-function updateGiaTMallItem(rate) {
+function formatMoneyToVND(number) {
+  const formatter = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  });
+
+  return formatter.format(number);
+};
+
+function showToast() {
+  var x = document.getElementById("oversea-toast");
+  x.className = "show";
+  setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+}
+
+function updateTMallItemPrice(rate) {
   setTimeout(() => {
     const regex = /Price--priceText-.*/;
     const elements = document.querySelectorAll('*');
@@ -18,41 +33,41 @@ function updateGiaTMallItem(rate) {
       return Array.from(element.classList).some(className => regex.test(className));
     });
 
-    const giaMoi = matchingElements[0].innerHTML
-    if (!!giaMoi) {
-      document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi * rate;
+    const newPrice = matchingElements[0].innerHTML
+    if (!!newPrice) {
+      document.getElementById("aalto-daily-gia-ban").innerHTML = formatMoneyToVND(newPrice * rate);
     }
   }, 200);
 }
 
-function updateGiaTaobaoItem(rate) {
+function updateTaobaoItemPrice(rate) {
   setTimeout(() => {
-    const giaCu = document.getElementById("J_PromoPriceNum");
-    if (giacu) {
-      const giaMoi = giaCu.innerHTML
+    const oldPrice = document.getElementById("J_PromoPriceNum");
+    if (oldPrice) {
+      const newPrice = oldPrice.innerHTML
         .split("-")
-        .map((e) => (e * rate) + "đ ")
+        .map((e) => formatMoneyToVND(e * rate))
         .join("-");
-      document.getElementById("aalto-daily-gia-ban").innerHTML = giaMoi;
+      document.getElementById("aalto-daily-gia-ban").innerHTML = newPrice;
     }
   }, 200);
 }
 
-function fetchTiGia() {
+function fetchExchangeRate() {
   fetch(`${baseUrl}/variables?name=exchangeRate&page=1&perPage=1`)
     .then((response) => response.json())
     .then((data) => {
       const exRate = data[0].value;
-      const tiGiaEl = document.getElementById("aalto-daily-ti-gia");
-      if (tiGiaEl) {
-        tiGiaEl.innerHTML = exRate;
+      const exchangeElement = document.getElementById("aalto-daily-ti-gia");
+      if (exchangeElement) {
+        exchangeElement.innerHTML = exRate;
       }
-      tigia = exRate;
+      globalRate = exRate;
       if (isTaobao) {
-        updateGiaTaobaoItem(exRate);
+        updateTaobaoItemPrice(exRate);
       }
       if (isTMall) {
-        updateGiaTMallItem(exRate);
+        updateTMallItemPrice(exRate);
       }
     })
     .catch((error) => {
@@ -68,6 +83,10 @@ function addToCartTaobaoItem() {
   pickProperty.forEach((e) => {
     properties.push(e.dataset.value);
   });
+  if (!properties.length || !productId) {
+    alert('Vui lòng chọn đủ thuộc tính sản phẩm');
+    return;
+  }
 
   const quantity = document.getElementById("J_IptAmount").value;
 
@@ -84,7 +103,7 @@ function addToCartTaobaoItem() {
     }),
   })
     .then((response) => response.json()) // or .text() for text
-    .then((data) => console.log(data))
+    .then(showToast())
     .catch((error) => {
       console.error("Error:", error);
     });
@@ -94,6 +113,10 @@ function addToCartTMallItem() {
   const params = new URLSearchParams(window.location.search);
   const productId = params.get("id");
   const skuId = params.get("skuId");
+  if (!skuId || !productId) {
+    alert('Vui lòng chọn đủ thuộc tính sản phẩm');
+    return;
+  }
 
   const quantity = document.getElementsByClassName("countValueForPC")[0].value;
 
@@ -110,7 +133,7 @@ function addToCartTMallItem() {
     }),
   })
     .then((response) => response.json()) // or .text() for text
-    .then((data) => console.log(data))
+    .then((data) => { console.log(data); showToast() })
     .catch((error) => {
       console.error("Error:", error);
     });
@@ -137,6 +160,7 @@ function main() {
       </ul>
   
       <div id="to-actions-container">
+        <div id="oversea-toast">Thêm vào giỏ hàng Oversea thành công.</div>
         <button id="purchase-btn">Đến giỏ hàng</button>
         <button id="cart-btn" onclick="addToCart()">
           <svg
@@ -171,12 +195,12 @@ function main() {
       </div>
           `;
 
-    fetchTiGia();
+    fetchExchangeRate();
 
     // On click product
     document.querySelectorAll(".J_TSaleProp li").forEach((item) => {
       item.addEventListener("click", (e) => {
-        updateGiaTaobaoItem(tigia);
+        updateTaobaoItemPrice(globalRate);
       });
     });
 
@@ -199,6 +223,7 @@ function main() {
       </ul>
   
       <div id="to-actions-container">
+        <div id="oversea-toast">Thêm vào giỏ hàng Oversea thành công.</div>
         <button id="purchase-btn">Đến giỏ hàng</button>
         <button id="cart-btn" onclick="addToCart()">
           <svg
@@ -233,11 +258,11 @@ function main() {
       </div>
           `;
 
-    fetchTiGia();
+    fetchExchangeRate();
 
     document.querySelectorAll(".skuCate .skuItemWrapper .skuItem").forEach((item) => {
       item.addEventListener("click", (e) => {
-        updateGiaTMallItem(tigia);
+        updateTMallItemPrice(globalRate);
       });
     });
 
