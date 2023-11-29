@@ -1,6 +1,6 @@
 const baseUrl = "https://api.mby.vn/api/oversea-ordering";
-const isTaobao = location.hostname === 'item.taobao.com'
-const isTMall = location.hostname === 'detail.tmall.com'
+const isTaobao = location.hostname === "item.taobao.com";
+const isTMall = location.hostname === "detail.tmall.com";
 var globalRate;
 var token;
 var varientContainer = document.getElementsByClassName("tb-skin");
@@ -10,32 +10,37 @@ chrome.storage.local.get("aaltoToken", (result) => {
 });
 
 function formatMoneyToVND(number) {
-  const formatter = new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
   });
 
   return formatter.format(number);
-};
+}
 
 function showToast() {
   var x = document.getElementById("oversea-toast");
   x.className = "show";
-  setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+  setTimeout(function () {
+    x.className = x.className.replace("show", "");
+  }, 3000);
 }
 
 function updateTMallItemPrice(rate) {
   setTimeout(() => {
     const regex = /Price--priceText-.*/;
-    const elements = document.querySelectorAll('*');
+    const elements = document.querySelectorAll("*");
 
-    const matchingElements = Array.from(elements).filter(element => {
-      return Array.from(element.classList).some(className => regex.test(className));
+    const matchingElements = Array.from(elements).filter((element) => {
+      return Array.from(element.classList).some((className) =>
+        regex.test(className)
+      );
     });
 
-    const newPrice = matchingElements[0].innerHTML
+    const newPrice = matchingElements[0].innerHTML;
     if (!!newPrice) {
-      document.getElementById("aalto-daily-gia-ban").innerHTML = formatMoneyToVND(newPrice * rate);
+      document.getElementById("aalto-daily-gia-ban").innerHTML =
+        formatMoneyToVND(newPrice * rate);
     }
   }, 200);
 }
@@ -76,19 +81,24 @@ function fetchExchangeRate() {
 }
 
 function addToCartTaobaoItem() {
+
   const params = new URLSearchParams(window.location.search);
   const productId = params.get("id");
   const pickProperty = document.querySelectorAll(".tb-skin .tb-selected");
+  const maxProp = document.querySelectorAll(".J_TSaleProp").length;
   const properties = [];
   pickProperty.forEach((e) => {
     properties.push(e.dataset.value);
   });
-  if (!properties.length || !productId) {
-    alert('Vui lòng chọn đủ thuộc tính sản phẩm');
+  if (properties.length !== maxProp || !productId) {
+    alert("Vui lòng chọn đủ thuộc tính sản phẩm");
     return;
   }
 
   const quantity = document.getElementById("J_IptAmount").value;
+  const btn = document.getElementById('cart-btn');
+  btn.classList.add('loading');
+  btn.setAttribute('disabled', '');
 
   fetch(`${baseUrl}/cart`, {
     method: "POST",
@@ -102,23 +112,32 @@ function addToCartTaobaoItem() {
       volume: Number(quantity),
     }),
   })
-    .then((response) => response.json()) // or .text() for text
+    .then((response) => response.json())
+    .then(() => {
+      btn.classList.remove('loading');
+      btn.removeAttribute('disabled')
+    })
     .then(showToast())
     .catch((error) => {
       console.error("Error:", error);
+      alert("Vui lòng reload lại Taobao và Oversea để lấy lại phiên đăng nhập");
     });
 }
 
 function addToCartTMallItem() {
+
   const params = new URLSearchParams(window.location.search);
   const productId = params.get("id");
   const skuId = params.get("skuId");
   if (!skuId || !productId) {
-    alert('Vui lòng chọn đủ thuộc tính sản phẩm');
+    alert("Vui lòng chọn đủ thuộc tính sản phẩm");
     return;
   }
 
   const quantity = document.getElementsByClassName("countValueForPC")[0].value;
+  const btn = document.getElementById('cart-btn');
+  btn.classList.add('loading');
+  btn.setAttribute('disabled', '');
 
   fetch(`${baseUrl}/cart`, {
     method: "POST",
@@ -132,22 +151,29 @@ function addToCartTMallItem() {
       volume: Number(quantity),
     }),
   })
-    .then((response) => response.json()) // or .text() for text
-    .then((data) => { console.log(data); showToast() })
+    .then((response) => response.json())
+    .then(showToast())
+    .then(() => {
+      btn.classList.remove('loading');
+      btn.removeAttribute('disabled')
+    })
     .catch((error) => {
       console.error("Error:", error);
+      alert("Vui lòng reload lại Taobao và Oversea để lấy lại phiên đăng nhập");
     });
 }
 
 function purchase() {
-  window.open('https://app.mby.vn/cart', '_blank').focus();
+  window.open("https://app.mby.vn/cart", "_blank").focus();
 }
 
 function main() {
-  var elements = document.querySelectorAll('*');
+  var elements = document.querySelectorAll("*");
   var regexTMall = /Price--root-.*/;
-  var varientTMallContainer = Array.from(elements).filter(element => {
-    return Array.from(element.classList).some(className => regexTMall.test(className));
+  var varientTMallContainer = Array.from(elements).filter((element) => {
+    return Array.from(element.classList).some((className) =>
+      regexTMall.test(className)
+    );
   })[0];
 
   if (!!varientContainer.length && isTaobao) {
@@ -162,8 +188,60 @@ function main() {
       <div id="to-actions-container">
         <div id="oversea-toast">Thêm vào giỏ hàng Oversea thành công.</div>
         <button id="purchase-btn">Đến giỏ hàng</button>
-        <button id="cart-btn" onclick="addToCart()">
+        <button id="cart-btn" class="">
+          <svg class="loading-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(239, 239, 239); shape-rendering: auto;" width="25px" height="25px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+            <g transform="rotate(0 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(30 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(60 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(90 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(120 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(150 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(180 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(210 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(240 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(270 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(300 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(330 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animate>
+              </rect>
+            </g>
+          </svg>
           <svg
+            class="cart-icon"
             width="800px"
             height="800px"
             viewBox="0 0 24 24"
@@ -225,8 +303,60 @@ function main() {
       <div id="to-actions-container">
         <div id="oversea-toast">Thêm vào giỏ hàng Oversea thành công.</div>
         <button id="purchase-btn">Đến giỏ hàng</button>
-        <button id="cart-btn" onclick="addToCart()">
+        <button id="cart-btn" class="">
+          <svg class="loading-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(239, 239, 239); shape-rendering: auto;" width="25px" height="25px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+            <g transform="rotate(0 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(30 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(60 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(90 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(120 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(150 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(180 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(210 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(240 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(270 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(300 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
+              </rect>
+            </g><g transform="rotate(330 50 50)">
+              <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="#e4812f">
+                <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s" repeatCount="indefinite"></animate>
+              </rect>
+            </g>
+          </svg>
           <svg
+            class="cart-icon"
             width="800px"
             height="800px"
             viewBox="0 0 24 24"
@@ -260,11 +390,13 @@ function main() {
 
     fetchExchangeRate();
 
-    document.querySelectorAll(".skuCate .skuItemWrapper .skuItem").forEach((item) => {
-      item.addEventListener("click", (e) => {
-        updateTMallItemPrice(globalRate);
+    document
+      .querySelectorAll(".skuCate .skuItemWrapper .skuItem")
+      .forEach((item) => {
+        item.addEventListener("click", (e) => {
+          updateTMallItemPrice(globalRate);
+        });
       });
-    });
 
     const [purchaseButton, addToCartButton] =
       customActionsContainer.getElementsByTagName("button");
@@ -277,4 +409,4 @@ function main() {
 
 document.addEventListener("readystatechange", (event) => {
   main();
-})
+});

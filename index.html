@@ -9,7 +9,7 @@
 
   <body>
     <div class="tb-skin"></div>
-    
+
     <div id="to-platform">
       <ul>
         <li>Giá bán: <span id="price">200đ</span></li>
@@ -19,8 +19,15 @@
 
       <div id="to-actions-container">
         <button id="purchase-btn">Mua hàng</button>
-        <button id="cart-btn" onclick="addToCart()">
+        <button class="loading" id="cart-btn" onclick="addToCart()">
+          <img
+            class="loading-icon"
+            style="height: 25px; width: 25px"
+            src="./spinner.svg"
+            alt="loading"
+          />
           <svg
+            class="cart-icon"
             width="800px"
             height="800px"
             viewBox="0 0 24 24"
