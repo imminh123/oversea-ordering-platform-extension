@@ -56,6 +56,28 @@
   transition: 0.3s all;
 }
 
+.loading-icon {
+  display: none;
+}
+
+#to-platform #cart-btn.loading .loading-icon {
+  display: block;
+}
+
+#to-platform #cart-btn.loading .cart-icon {
+  display: none;
+}
+
+#to-platform #cart-btn.loading:hover {
+  background-color: rgb(239, 239, 239);
+  color: #ff6c22;
+  cursor: wait;
+}
+
+#to-platform #cart-btn.loading:hover svg {
+  stroke: #ff6c22;
+}
+
 #to-platform #cart-btn:hover {
   margin-right: 10px;
   background-color: #ff6c22;
@@ -83,12 +105,12 @@
   border-radius: 2px;
   padding: 16px;
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
   left: 50%;
   top: 50px;
 }
 
-#snackbar.show {
+#oversea-toast.show {
   visibility: visible;
   -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
   animation: fadein 0.5s, fadeout 0.5s 2.5s;
