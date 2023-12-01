@@ -37,10 +37,13 @@
   "externally_connectable": {
     "matches": [
       "http://localhost:3000/*",
+      "http://localhost:4173/*",
       "https://api.mby.vn/api/oversea-ordering/*"
     ]
   },
   "host_permissions": [
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "http://localhost:4173/*",
+    "https://api.mby.vn/api/oversea-ordering/*"
   ]
 }
