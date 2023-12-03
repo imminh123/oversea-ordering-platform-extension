@@ -18,8 +18,12 @@ function formatMoneyToVND(number) {
   return formatter.format(number);
 }
 
-function showToast() {
+function showToast(success) {
   var x = document.getElementById("oversea-toast");
+  if (!success) {
+    x.innerHTML = 'Thêm vào giỏ hàng thất bại';
+    x.style.backgroundColor = 'red';
+  }
   x.className = "show";
   setTimeout(function () {
     x.className = x.className.replace("show", "");
@@ -113,14 +117,17 @@ function addToCartTaobaoItem() {
     }),
   })
     .then((response) => response.json())
+    .then((data) => {
+      if (data) {
+        showToast(true);
+      }
+      if (data.error) {
+        showToast(false);
+      }
+    })
     .then(() => {
       btn.classList.remove('loading');
       btn.removeAttribute('disabled')
-    })
-    .then(showToast())
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("Vui lòng reload lại Taobao và Oversea để lấy lại phiên đăng nhập");
     });
 }
 
@@ -147,20 +154,23 @@ function addToCartTMallItem() {
     },
     body: JSON.stringify({
       id: productId,
-      pvid: [skuId],
+      skuId,
       volume: Number(quantity),
     }),
   })
     .then((response) => response.json())
-    .then(showToast())
+    .then((data) => {
+      if (data) {
+        showToast(true);
+      }
+      if (data.error) {
+        showToast(false);
+      }
+    })
     .then(() => {
       btn.classList.remove('loading');
       btn.removeAttribute('disabled')
     })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("Vui lòng reload lại Taobao và Oversea để lấy lại phiên đăng nhập");
-    });
 }
 
 function purchase() {
