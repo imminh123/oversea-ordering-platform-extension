@@ -196,7 +196,7 @@ function main() {
       </ul>
   
       <div id="to-actions-container">
-        <div id="oversea-toast">Thêm vào giỏ hàng Oversea thành công.</div>
+        <div id="oversea-toast">Thêm vào giỏ hàng MBY Logistics thành công.</div>
         <button id="purchase-btn">Đến giỏ hàng</button>
         <button id="cart-btn" class="">
           <svg class="loading-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(239, 239, 239); shape-rendering: auto;" width="25px" height="25px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
@@ -311,7 +311,7 @@ function main() {
       </ul>
   
       <div id="to-actions-container">
-        <div id="oversea-toast">Thêm vào giỏ hàng Oversea thành công.</div>
+        <div id="oversea-toast">Thêm vào giỏ hàng MBY Logistics thành công.</div>
         <button id="purchase-btn">Đến giỏ hàng</button>
         <button id="cart-btn" class="">
           <svg class="loading-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(239, 239, 239); shape-rendering: auto;" width="25px" height="25px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">

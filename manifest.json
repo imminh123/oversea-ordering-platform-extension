@@ -22,8 +22,7 @@
       ],
       "matches": [
         "https://item.taobao.com/item.htm*",
-        "https://detail.tmall.com/item.htm*",
-        "http://localhost:3000/*"
+        "https://detail.tmall.com/item.htm*"
       ],
       "js": [
         "scripts/content.js"
