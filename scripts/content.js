@@ -63,7 +63,13 @@ function updateTaobaoItemPrice(rate) {
 }
 
 function fetchExchangeRate() {
-  fetch(`${baseUrl}/variables?name=exchangeRate&page=1&perPage=1`)
+  fetch(`${baseUrl}/variables?name=exchangeRate&page=1&perPage=1`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "access-token": `${token}`,
+    },
+  })
     .then((response) => response.json())
     .then((data) => {
       const exRate = data[0].value;

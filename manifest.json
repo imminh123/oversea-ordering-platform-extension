@@ -22,7 +22,8 @@
       ],
       "matches": [
         "https://item.taobao.com/item.htm*",
-        "https://detail.tmall.com/item.htm*"
+        "https://detail.tmall.com/item.htm*",
+        "http://localhost:3000/*"
       ],
       "js": [
         "scripts/content.js"
@@ -35,10 +36,12 @@
   },
   "externally_connectable": {
     "matches": [
-      "https://api.mby.vn/*"
+      "https://api.mby.vn/*",
+      "http://localhost:3000/*"
     ]
   },
   "host_permissions": [
-    "https://api.mby.vn/*"
+    "https://api.mby.vn/*",
+    "http://localhost:3000/*"
   ]
 }
