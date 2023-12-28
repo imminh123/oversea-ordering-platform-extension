@@ -43,7 +43,7 @@ function updateTMallItemPrice(rate) {
 
     const newPrice = matchingElements[0].innerHTML;
     if (!!newPrice) {
-      document.getElementById("aalto-daily-gia-ban").innerHTML =
+      document.getElementById("taobao-gia-ban").innerHTML =
         formatMoneyToVND(newPrice * rate);
     }
   }, 200);
@@ -57,7 +57,7 @@ function updateTaobaoItemPrice(rate) {
         .split("-")
         .map((e) => formatMoneyToVND(e * rate))
         .join("-");
-      document.getElementById("aalto-daily-gia-ban").innerHTML = newPrice;
+      document.getElementById("taobao-gia-ban").innerHTML = newPrice;
     }
   }, 200);
 }
@@ -73,7 +73,7 @@ function fetchExchangeRate() {
     .then((response) => response.json())
     .then((data) => {
       const exRate = data[0].value;
-      const exchangeElement = document.getElementById("aalto-daily-ti-gia");
+      const exchangeElement = document.getElementById("taobao-ti-gia");
       if (exchangeElement) {
         exchangeElement.innerHTML = exRate;
       }
@@ -196,9 +196,10 @@ function main() {
     const customActionsContainer = document.createElement("div");
     customActionsContainer.id = "to-platform";
     customActionsContainer.innerHTML = `
+    <img style=" width: 100px;float: right; margin-top: 5px;" src="https://i.ibb.co/CWFcJjc/mby.png" alt="logo_mby"/>
       <ul>
-        <li>Giá bán: <span id="aalto-daily-gia-ban">200đ</span></li>
-        <li>Tỷ giá 1 ¥: <span id="aalto-daily-ti-gia">3.480đ</span></li>
+        <li>Giá bán: <span id="taobao-gia-ban">200đ</span></li>
+        <li>Tỷ giá 1 ¥: <span id="taobao-ti-gia">3.480đ</span></li>
       </ul>
   
       <div id="to-actions-container">
@@ -312,8 +313,8 @@ function main() {
     customActionsContainer.id = "to-platform";
     customActionsContainer.innerHTML = `
       <ul>
-        <li>Giá bán: <span id="aalto-daily-gia-ban">200đ</span></li>
-        <li>Tỷ giá 1 ¥: <span id="aalto-daily-ti-gia">3.480đ</span></li>
+        <li>Giá bán: <span id="taobao-gia-ban">200đ</span></li>
+        <li>Tỷ giá 1 ¥: <span id="taobao-ti-gia">3.480đ</span></li>
       </ul>
   
       <div id="to-actions-container">
