@@ -52,8 +52,10 @@ function updateTMallItemPrice(rate) {
 function updateTaobaoItemPrice(rate) {
   setTimeout(() => {
     const oldPrice = document.querySelectorAll(".tb-property-cont .tb-rmb-num");
-    if (!!oldPrice.length) {
-      const newPrice = oldPrice[0].innerHTML
+    const salePrice = document.querySelectorAll(".tb-promo-price #J_PromoPriceNum");
+    const showPrice = !!salePrice.length ? salePrice : oldPrice
+    if (!!showPrice.length) {
+      const newPrice = showPrice[0].innerHTML
         .split("-")
         .map((e) => formatMoneyToVND(e * rate))
         .join("-");
