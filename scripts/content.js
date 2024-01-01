@@ -314,6 +314,7 @@ function main() {
     const customActionsContainer = document.createElement("div");
     customActionsContainer.id = "to-platform";
     customActionsContainer.innerHTML = `
+    <img style=" width: 100px;float: right; margin-top: 5px;" src="https://i.ibb.co/CWFcJjc/mby.png" alt="logo_mby"/>
       <ul>
         <li>Giá bán: <span id="taobao-gia-ban">200đ</span></li>
         <li>Tỷ giá 1 ¥: <span id="taobao-ti-gia">3.480đ</span></li>

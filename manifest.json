@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MBY Logistics: Đặt hàng Trung Quốc",
   "version": "1.0",
-  "description": "Nền tảng đơn giản hóa mua hàng quốc tế, chuyên vận chuyển hàng từ Trung Quốc đến Việt Nam đảm bảo giải pháp hiệu quả về chi phí, xử lý đơn hàng nhanh chóng và dịch vụ vận chuyển tin cậy.",
+  "description": "Nền tảng mua hàng quốc tế, chuyên vận chuyển hàng từ Trung Quốc, tối ưu chi phí, xử lý nhanh chóng và vận chuyển tin cậy.",
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
