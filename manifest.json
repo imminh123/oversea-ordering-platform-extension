@@ -36,10 +36,17 @@
   },
   "externally_connectable": {
     "matches": [
-      "https://api.mby.vn/*"
+      "https://api.mby.vn/*",
+      "https://app.mby.vn/*",
+      "http://localhost:3000/*",
+      "http://127.0.0.1:3000/*"
     ]
   },
   "host_permissions": [
-    "https://api.mby.vn/*"
+    "https://api.mby.vn/*",
+    "https://app.mby.vn/*",
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*"
+
   ]
 }
