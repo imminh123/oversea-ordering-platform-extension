@@ -37,12 +37,14 @@ function updateTMallItemPrice(rate) {
         regex.test(className)
       );
     });
-    const quantity = document.getElementsByClassName("countValueForPC")[0].value;
+    const quantity =
+      document.getElementsByClassName("countValueForPC")[0]?.value;
 
     const newPrice = matchingElements[0].innerHTML;
-    if (!!newPrice) {
-      document.getElementById("taobao-gia-ban").innerHTML =
-        formatMoneyToVND(+newPrice * +rate *  +quantity);
+    if (!!newPrice && quantity) {
+      document.getElementById("taobao-gia-ban").innerHTML = formatMoneyToVND(
+        +newPrice * +rate * +quantity
+      );
     }
   }, 200);
 }
@@ -50,10 +52,12 @@ function updateTMallItemPrice(rate) {
 function updateTaobaoItemPrice(rate) {
   setTimeout(() => {
     const oldPrice = document.querySelectorAll(".tb-property-cont .tb-rmb-num");
-    const salePrice = document.querySelectorAll(".tb-promo-price #J_PromoPriceNum");
+    const salePrice = document.querySelectorAll(
+      ".tb-promo-price #J_PromoPriceNum"
+    );
     const showPrice = !!salePrice.length ? salePrice : oldPrice;
     const quantity = document.getElementById("J_IptAmount").value;
-    
+
     if (!!showPrice.length) {
       const newPrice = showPrice[0].innerHTML
         .split("-")
@@ -88,7 +92,7 @@ function fetchExchangeRate() {
     });
 }
 
-function addToCart() {
+function addToCartTMallItem() {
   const params = new URLSearchParams(window.location.search);
   const productId = params.get("id");
   const skuId = params.get("skuId");
@@ -129,6 +133,52 @@ function addToCart() {
     });
 }
 
+function addToCartTaobaoItem() {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("id");
+  const pickProperty = document.querySelectorAll(".tb-skin .tb-selected");
+  const maxProp = document.querySelectorAll(".J_TSaleProp").length;
+  const properties = [];
+  pickProperty.forEach((e) => {
+    properties.push(e.dataset.value);
+  });
+  if (properties.length !== maxProp || !productId) {
+    alert("Vui lòng chọn đủ thuộc tính sản phẩm");
+    return;
+  }
+
+  const quantity = document.getElementById("J_IptAmount").value;
+  const btn = document.getElementById("cart-btn");
+  btn.classList.add("loading");
+  btn.setAttribute("disabled", "");
+
+  fetch(`${baseUrl}/cart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "access-token": `${token}`,
+    },
+    body: JSON.stringify({
+      id: productId,
+      pvid: properties,
+      volume: Number(quantity),
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data) {
+        showToast(true);
+      }
+      if (data.error) {
+        showToast(false);
+      }
+    })
+    .then(() => {
+      btn.classList.remove("loading");
+      btn.removeAttribute("disabled");
+    });
+}
+
 function purchase() {
   window.open("https://app.mby.vn/cart", "_blank").focus();
 }
@@ -136,7 +186,7 @@ function purchase() {
 function main() {
   setTimeout(() => {
     fetchExchangeRate();
-  }, 500);
+  }, 200);
 
   const elements = document.querySelectorAll("*");
 
@@ -154,12 +204,12 @@ function main() {
     );
   })[0];
   const customActionsContainer = document.createElement("div");
-    customActionsContainer.style.maxWidth = "450px";
-    customActionsContainer.style.fontFamily = "system-ui";
-    customActionsContainer.style.fontSize = "15px";
+  customActionsContainer.style.maxWidth = "450px";
+  customActionsContainer.style.fontFamily = "system-ui";
+  customActionsContainer.style.fontSize = "15px";
 
-    customActionsContainer.id = "to-platform";
-    customActionsContainer.innerHTML = `
+  customActionsContainer.id = "to-platform";
+  customActionsContainer.innerHTML = `
     <img style=" width: 100px;float: right; margin-top: 5px;" src="https://i.ibb.co/CWFcJjc/mby.png" alt="logo_mby"/>
       <ul>
         <li>Giá bán: <span id="taobao-gia-ban">200đ</span></li>
@@ -255,13 +305,12 @@ function main() {
     </div>
         `;
 
-  // actions container
-  const [purchaseButton, addToCartButton] =
-    customActionsContainer.getElementsByTagName("button");
-  purchaseButton.addEventListener("click", purchase);
-  addToCartButton.addEventListener("click", addToCart);
-
   if (varientContainerTmall) {
+    // actions container
+    const [purchaseButton, addToCartButton] =
+      customActionsContainer.getElementsByTagName("button");
+    purchaseButton.addEventListener("click", purchase);
+    addToCartButton.addEventListener("click", addToCartTMallItem);
     // On click product
     document
       .querySelectorAll(".skuCate .skuItemWrapper .skuItem")
@@ -281,6 +330,11 @@ function main() {
   }
 
   if (varientContainerItem) {
+    // actions container
+    const [purchaseButton, addToCartButton] =
+      customActionsContainer.getElementsByTagName("button");
+    purchaseButton.addEventListener("click", purchase);
+    addToCartButton.addEventListener("click", addToCartTaobaoItem);
     // On click product
     document.querySelectorAll(".J_TSaleProp li").forEach((item) => {
       item.addEventListener("click", (e) => {
