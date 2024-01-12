@@ -29,7 +29,7 @@ function showToast(success) {
 
 function updateTMallItemPrice(rate) {
   setTimeout(() => {
-    const regex = /Price--priceText-.*/;
+    const regex = /(Price--priceText-.*)|(tb-rmb-num)/;
     const elements = document.querySelectorAll("*");
 
     const matchingElements = Array.from(elements).filter((element) => {
@@ -137,32 +137,35 @@ function main() {
   setTimeout(() => {
     fetchExchangeRate();
   }, 500);
+
   const elements = document.querySelectorAll("*");
 
   const regexTaobaoItem = /tb-skin*/;
-  const regexTmall = /Actions--root-.*/;
+  const regexTmall = /BasicContent--sku.*/;
 
   const varientContainerItem = Array.from(elements).filter((element) => {
     return Array.from(element.classList).some((className) =>
       regexTaobaoItem.test(className)
     );
   })[0];
-
   const varientContainerTmall = Array.from(elements).filter((element) => {
     return Array.from(element.classList).some((className) =>
       regexTmall.test(className)
     );
   })[0];
-
   const customActionsContainer = document.createElement("div");
+    customActionsContainer.style.maxWidth = "450px";
+    customActionsContainer.style.fontFamily = "system-ui";
+    customActionsContainer.style.fontSize = "15px";
 
-  customActionsContainer.id = "to-platform";
-  customActionsContainer.innerHTML = `
-  <img style=" width: 100px;float: right; margin-top: 5px;" src="https://i.ibb.co/CWFcJjc/mby.png" alt="logo_mby"/>
-    <ul>
-      <li>Giá bán: <span id="taobao-gia-ban">200đ</span></li>
-      <li>Tỷ giá 1 ¥: <span id="taobao-ti-gia">3.480đ</span></li>
-    </ul>
+    customActionsContainer.id = "to-platform";
+    customActionsContainer.innerHTML = `
+    <img style=" width: 100px;float: right; margin-top: 5px;" src="https://i.ibb.co/CWFcJjc/mby.png" alt="logo_mby"/>
+      <ul>
+        <li>Giá bán: <span id="taobao-gia-ban">200đ</span></li>
+        <li>Tỷ giá 1 ¥: <span id="taobao-ti-gia">3.480đ</span></li>
+      </ul>
+  
 
     <div id="to-actions-container">
       <div id="oversea-toast">Thêm vào giỏ hàng MBY Logistics thành công.</div>
@@ -258,15 +261,7 @@ function main() {
   purchaseButton.addEventListener("click", purchase);
   addToCartButton.addEventListener("click", addToCart);
 
-  // token not found
-  if (!token) {
-    const actionContainer = document.getElementById("to-actions-container");
-    if (actionContainer) {
-      actionContainer.innerHTML = `Bạn đã có tài khoản?<a href='https://app.mby.vn/auth/login' target='_blank'>Đăng nhập</a>`;
-    }
-  }
-
-  if (!!varientContainerTmall) {
+  if (varientContainerTmall) {
     // On click product
     document
       .querySelectorAll(".skuCate .skuItemWrapper .skuItem")
@@ -285,7 +280,7 @@ function main() {
     varientContainerTmall.prepend(customActionsContainer);
   }
 
-  if (!!varientContainerItem) {
+  if (varientContainerItem) {
     // On click product
     document.querySelectorAll(".J_TSaleProp li").forEach((item) => {
       item.addEventListener("click", (e) => {
@@ -300,6 +295,14 @@ function main() {
     });
 
     varientContainerItem.prepend(customActionsContainer);
+  }
+
+  // token not found
+  if (!token) {
+    const actionContainer = document.getElementById("to-actions-container");
+    if (actionContainer) {
+      actionContainer.innerHTML = `<span">Để thêm sản phẩm vào giỏ hàng, vui lòng <a href='https://app.mby.vn/auth/login' target='_blank' style="text-decoration: underline;"> đăng nhập</a> </span>`;
+    }
   }
 }
 
