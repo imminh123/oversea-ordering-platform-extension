@@ -1,6 +1,6 @@
 const baseUrl = "https://api.mby.vn/api/oversea-ordering";
-var globalRate;
-var token;
+let globalRate;
+let token;
 
 chrome.storage.local.get("aaltoToken", (result) => {
   token = result.aaltoToken;
@@ -16,7 +16,7 @@ function formatMoneyToVND(number) {
 }
 
 function showToast(success) {
-  var x = document.getElementById("oversea-toast");
+  const x = document.getElementById("oversea-toast");
   if (!success) {
     x.innerHTML = "Thêm vào giỏ hàng thất bại";
     x.style.backgroundColor = "red";
@@ -42,7 +42,7 @@ function updateItemPrice(rate) {
     const newPrice = matchingElements[0].innerHTML;
     if (!!newPrice) {
       document.getElementById("taobao-gia-ban").innerHTML = formatMoneyToVND(
-        (+newPrice) * (+rate)
+        +newPrice * +rate
       );
     }
   }, 200);
@@ -117,15 +117,17 @@ function purchase() {
 }
 
 function main() {
-  var elements = document.querySelectorAll("*");
+  const elements = document.querySelectorAll("*");
 
-  var regexTaobaoGlobal = /Actions--root-.*/;
-  var varientContainer = Array.from(elements).filter((element) => {
+  const regexTaobaoGlobal = /tb-skin*/;
+  // const regexTaobaoGlobal = /Actions--root-.*/;
+
+  const varientContainer = Array.from(elements).filter((element) => {
     return Array.from(element.classList).some((className) =>
       regexTaobaoGlobal.test(className)
     );
   })[0];
-
+  
   if (!!varientContainer) {
     const customActionsContainer = document.createElement("div");
     customActionsContainer.id = "to-platform";
@@ -224,11 +226,6 @@ function main() {
       </div>
           `;
 
-    if(!token){
-    const actionContainer = document.getElementById("to-actions-container");
-    actionContainer.innerHTML = `Bạn đã có tài khoản?<a href='https://app.mby.vn/auth/login' target='_blank'>Đăng nhập</a>`
-  }
-
     // On click product
     document
       .querySelectorAll(".skuCate .skuItemWrapper .skuItem")
@@ -244,9 +241,16 @@ function main() {
     purchaseButton.addEventListener("click", purchase);
     addToCartButton.addEventListener("click", addToCart);
 
-    varientContainer.append(customActionsContainer);
-  }
+    varientContainer.prepend(customActionsContainer);
 
+    // token not found
+    if (!token) {
+      const actionContainer = document.getElementById("to-actions-container");
+      if (actionContainer) {
+        actionContainer.innerHTML = `Bạn đã có tài khoản?<a href='https://app.mby.vn/auth/login' target='_blank'>Đăng nhập</a>`;
+      }
+    }
+  }
 }
 
 document.addEventListener("readystatechange", (event) => {
