@@ -28,7 +28,6 @@ function showToast(success) {
 }
 
 function updateItemPrice(rate) {
-  fetchExchangeRate();
   setTimeout(() => {
     const regex = /Price--priceText-.*/;
     const elements = document.querySelectorAll("*");
@@ -40,9 +39,10 @@ function updateItemPrice(rate) {
     });
 
     const newPrice = matchingElements[0].innerHTML;
+    const quantity = document.getElementsByClassName("countValueForPC")[0].value;
     if (!!newPrice) {
       document.getElementById("taobao-gia-ban").innerHTML = formatMoneyToVND(
-        (+newPrice) * (+rate)
+        +newPrice * +rate * +quantity
       );
     }
   }, 200);
@@ -224,10 +224,12 @@ function main() {
       </div>
           `;
 
-    if(!token){
-    const actionContainer = document.getElementById("to-actions-container");
-    actionContainer.innerHTML = `Bạn đã có tài khoản?<a href='https://app.mby.vn/auth/login' target='_blank'>Đăng nhập</a>`
-  }
+    if (!token) {
+      const actionContainer = document.getElementById("to-actions-container");
+      if(actionContainer){
+        actionContainer.innerHTML = `Bạn đã có tài khoản?<a href='https://app.mby.vn/auth/login' target='_blank'>Đăng nhập</a>`;
+      }
+    }
 
     // On click product
     document
@@ -238,6 +240,14 @@ function main() {
         });
       });
 
+    document
+    .querySelectorAll(".countWrapper .quantityBtn")
+    .forEach((item) => {
+      item.addEventListener("click", (e) => {
+        updateItemPrice(globalRate);
+      });
+    });
+
     // actions container
     const [purchaseButton, addToCartButton] =
       customActionsContainer.getElementsByTagName("button");
@@ -245,11 +255,13 @@ function main() {
     addToCartButton.addEventListener("click", addToCart);
 
     varientContainer.append(customActionsContainer);
-  }
 
+    setTimeout(() => {
+      fetchExchangeRate();
+    }, 500);
+  }
 }
 
 document.addEventListener("readystatechange", (event) => {
   main();
-  fetchExchangeRate();
 });
