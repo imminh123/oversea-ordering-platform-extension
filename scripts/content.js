@@ -30,7 +30,7 @@ function showToast(success) {
 function updateItemPrice(rate) {
   fetchExchangeRate();
   setTimeout(() => {
-    const regex = /Price--priceText-.*/;
+    const regex = /(Price--priceText-.*)|(tb-rmb-num)/;
     const elements = document.querySelectorAll("*");
 
     const matchingElements = Array.from(elements).filter((element) => {
@@ -40,10 +40,13 @@ function updateItemPrice(rate) {
     });
 
     const newPrice = matchingElements[0].innerHTML;
-    if (!!newPrice) {
-      document.getElementById("taobao-gia-ban").innerHTML = formatMoneyToVND(
-        +newPrice * +rate
-      );
+
+    if (newPrice) {
+      let itemRetailPrice = document.getElementById("taobao-gia-ban");
+
+      if (itemRetailPrice) {
+        itemRetailPrice.innerHTML = formatMoneyToVND(+newPrice * +rate);
+      }
     }
   }, 200);
 }
@@ -119,17 +122,17 @@ function purchase() {
 function main() {
   const elements = document.querySelectorAll("*");
 
-  const regexTaobaoGlobal = /tb-skin*/;
-  // const regexTaobaoGlobal = /Actions--root-.*/;
+  const regexTaobaoGlobal = /^(Actions--root-*|tb-skin*|BasicContent--sku*)/;
 
   const varientContainer = Array.from(elements).filter((element) => {
     return Array.from(element.classList).some((className) =>
       regexTaobaoGlobal.test(className)
     );
   })[0];
-  
-  if (!!varientContainer) {
+  if (varientContainer) {
     const customActionsContainer = document.createElement("div");
+    customActionsContainer.style.maxWidth = "450px";
+
     customActionsContainer.id = "to-platform";
     customActionsContainer.innerHTML = `
     <img style=" width: 100px;float: right; margin-top: 5px;" src="https://i.ibb.co/CWFcJjc/mby.png" alt="logo_mby"/>
